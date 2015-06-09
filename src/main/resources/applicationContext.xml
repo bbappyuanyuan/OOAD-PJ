@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://10.141.211.151:3306/OOAD" />
+		<property name="username" value="yzf" />
+		<property name="password" value="yzf" />
+	</bean>
+
+	<!-- Hibernate 4 SessionFactory Bean definition -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan" value="ooad.domain" />
+		<property name="hibernateProperties">
+			<props>
+				<!-- creates the schema, destroying previous data -->
+				<prop key="hibernate.hbm2ddl.auto">create</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">false</prop>
+			</props>
+		</property>
+	</bean>
+
+	<tx:annotation-driven />
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<!-- Enable @Autowired -->
+	<bean
+		class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+
+	<!-- Inject SessionFactory -->
+	<bean id="accountDao" class="ooad.repository.impl.AccountDaoImpl" />
+	<bean id="bookDao" class="ooad.repository.impl.BookDaoImpl" />
+	<bean id="borrowRecordDao" class="ooad.repository.impl.BorrowRecordDaoImpl" />
+	<bean id="noteDao" class="ooad.repository.impl.NoteDaoImpl" />
+	<bean id="readingDao" class="ooad.repository.impl.ReadingDaoImpl" />
+	<bean id="URLCommentDao" class="ooad.repository.impl.URLCommentDaoImpl" />
+
+	<!-- Inject *Dao -->
+	<bean id="accountService" class="ooad.service.impl.AccountServiceImpl" />
+	<bean id="bookService" class="ooad.service.impl.BookServiceImpl" />
+	<bean id="borrowService" class="ooad.service.impl.BorrowServiceImpl" />
+	<bean id="readingService" class="ooad.service.impl.ReadingServiceImpl" />
+</beans>
