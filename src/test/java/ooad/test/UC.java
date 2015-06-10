@@ -7,34 +7,43 @@ import java.util.Set;
 import ooad.domain.*;
 import ooad.service.*;
 
-import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-public class Test {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("/applicationContext.xml")
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class UC {
 
-	private static ApplicationContext context;
-	private static AccountService accountService;
-	private static BookService bookService;
-	private static BorrowService borrowService;
-	private static ReadingService readingService;
+	@Autowired
+	private AccountService accountService;
+	@Autowired
+	private BookService bookService;
+	@Autowired
+	private BorrowService borrowService;
+	@Autowired
+	private ReadingService readingService;
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		context = new ClassPathXmlApplicationContext("applicationContext.xml");
+	@Test
+	public void test0_showBeans() {
+		@SuppressWarnings("resource")
+		ApplicationContext context = new ClassPathXmlApplicationContext(
+				"applicationContext.xml");
 		String[] beanNames = context.getBeanDefinitionNames();
 		for (String beanName : beanNames)
 			System.out.println(beanName + " =========> "
 					+ context.getBean(beanName).getClass().getName());
-		accountService = context.getBean(AccountService.class);
-		bookService = context.getBean(BookService.class);
-		borrowService = context.getBean(BorrowService.class);
-		readingService = context.getBean(ReadingService.class);
-		addBooks();
-		addAccounts();
 	}
 
-	public static void addBooks() {
+	@Test
+	public void test1_addBooks() {
 		bookService.addBook(new Ebook("A Tale of Two Cities - EB",
 				"Charles Dickens", "PLPH", Double.valueOf(14.10),
 				"http://book.douban.com/subject/1007772/"));
@@ -42,12 +51,13 @@ public class Test {
 				"Charles Dickens", "PLPH", Double.valueOf(14.10), 2));
 	}
 
-	public static void addAccounts() {
+	@Test
+	public void test2_addAccounts() {
 		accountService.addAccount(new Account("Tinghang"));
 	}
 
-	@org.junit.Test
-	public void useCase1() {
+	@Test
+	public void test3_useCase1() {
 		Book book = bookService.findBook("A Tale of Two Cities - EB");
 		assertTrue(book != null);
 		assertTrue(book instanceof Ebook);
@@ -72,8 +82,8 @@ public class Test {
 		readingService.finishReadingBook(reading, page + 20);
 	}
 
-	@org.junit.Test
-	public void useCase2() {
+	@Test
+	public void test4_useCase2() {
 		Book book = bookService.findBook("A Tale of Two Cities - PB");
 		assertTrue(book != null);
 		assertTrue(book instanceof Paperbook);
